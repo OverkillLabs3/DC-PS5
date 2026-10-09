@@ -1,0 +1,36 @@
+#include <cstdint>
+#include <cstdio>
+#include <cstddef>
+#include "SceTypes.hpp"
+#include "prx/libc/include/General.hpp"
+
+
+namespace {
+// Online-service call: soft-fail with SCE_NP_ERROR_ABORTED instead of throwing (a thrown
+// exception reaches std::terminate and aborts the whole game process).
+int SoftFailNp(const char* func) {
+    std::fprintf(stderr, "[SOFT-NP] %s -> 0x800242e2 (online service not available)\n", func);
+    std::fflush(stderr);
+    return static_cast<int>(0x800242e2u);
+}
+}  // namespace
+
+extern "C" {
+
+int APS5_VABI sceRemoteplayGetConnectionStatus(int user_id, int* status) {
+ (void)user_id;
+ (void)status;
+ return SoftFailNp(__func__);
+ return 0;
+}
+int APS5_VABI sceRemoteplayInitialize(void* heap, size_t heap_size) {
+ (void)heap;
+ (void)heap_size;
+ return SoftFailNp(__func__);
+ return 0;
+}
+int APS5_VABI sceRemoteplayTerminate(void) {
+ return SoftFailNp(__func__);
+ return 0;
+}
+}
